@@ -4,7 +4,7 @@ np.random.seed(23)
 n = 20
 
 features = np.random.choice(2, (10000, 20))
-true_labels = label_data(features)
+true_labels = classify(features)
 data = np.hstack((features, true_labels))
 #Testing
 # fake_data = np.random.choice(2, (10, 10))
