@@ -3,9 +3,9 @@ import numpy as np
 np.random.seed(23)
 n = 20
 
-features = np.random.choice(2, (10000, 20))
-true_labels = classify(features)
-data = np.hstack((features, true_labels))
+FEATURES = np.random.choice(2, (10000, 20))
+TRUE_LABELS = classify(FEATURES)
+DATA = np.hstack((FEATURES, TRUE_LABELS))
 #Testing
 # fake_data = np.random.choice(2, (10, 10))
 
