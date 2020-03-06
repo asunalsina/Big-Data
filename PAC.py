@@ -38,16 +38,17 @@ if __name__ == "__main__":
     for i in range(10000):
         errors_per_m = pd.DataFrame(columns=sample_sizes)
         for m in sample_sizes:
-            current_sample = sample(FEATURES, m)
+            sample_choice = sorted(np.random.choice(FEATURES.shape[0], m, replace = False))
+            current_sample = FEATURES[sample_choice]
             labels = classify(current_sample, TRUE_FUNCTION).reshape((-1, 1))
             data = np.hstack((current_sample, labels))
             hypothesis = learning(data)
 
             POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
             prediction = classify(POSITIVE_FEATURES, hypothesis)
-            import pdb; pdb.set_trace()
             correct = np.count_nonzero(prediction)
             error = 1 - (correct/ len(prediction))
+            print(error)
             
 
     # Testing
