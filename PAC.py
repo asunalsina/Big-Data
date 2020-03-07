@@ -34,7 +34,6 @@ if __name__ == "__main__":
     TRUE_DATA = np.hstack((FEATURES, TRUE_LABELS))
     POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
 
-
     sample_sizes = list(range(50, 500, 50)) + [486]
 
     errors_per_m = {}
@@ -49,14 +48,13 @@ if __name__ == "__main__":
 
             prediction = classify(POSITIVE_FEATURES, hypothesis)
             correct = np.count_nonzero(prediction)
-            error = 1 - (correct/ len(prediction))
+            error = 1 - (correct / len(prediction))
 
             if m in errors_per_m:
                 errors_per_m[m].append(error)
             else:
                 errors_per_m[m] = [error]
-    
-            
+
     results = pd.DataFrame.from_dict(errors_per_m)
     results.to_csv('errors_per_sample_size.csv')
     # Testing
