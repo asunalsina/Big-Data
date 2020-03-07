@@ -33,19 +33,17 @@ if __name__ == "__main__":
     TRUE_LABELS = classify(FEATURES, TRUE_FUNCTION).reshape((-1, 1))
     TRUE_DATA = np.hstack((FEATURES, TRUE_LABELS))
     POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
-
     sample_sizes = list(range(50, 500, 50)) + [486]
 
     errors_per_m = {}
     for i in tqdm(range(10000)):
         # errors_per_m = pd.DataFrame(columns=sample_sizes)
         for m in sample_sizes:
-            idx = np.random.randint(FEATURES.shape[-1], size=m)
+            idx = np.random.randint(FEATURES.shape[0], size=m)
             current_sample = FEATURES[idx, :]
             labels = classify(current_sample, TRUE_FUNCTION).reshape((-1, 1))
             data = np.hstack((current_sample, labels))
             hypothesis = learning(data)
-
             prediction = classify(POSITIVE_FEATURES, hypothesis)
             correct = np.count_nonzero(prediction)
             error = 1 - (correct / len(prediction))
