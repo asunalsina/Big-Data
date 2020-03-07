@@ -1,6 +1,7 @@
 import numpy as np
 from random import sample
 import pandas as pd
+from tqdm import tqdm
 
 
 TRUE_FUNCTION = [(1, 1), (3, 0), (5, 1), (7, 1)]
@@ -31,24 +32,32 @@ if __name__ == "__main__":
     FEATURES = np.random.choice(2, (10000, 20))
     TRUE_LABELS = classify(FEATURES, TRUE_FUNCTION).reshape((-1, 1))
     TRUE_DATA = np.hstack((FEATURES, TRUE_LABELS))
+    POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
 
 
-    sample_sizes = list(range(0, 500, 50)) + [486]
+    sample_sizes = list(range(50, 500, 50)) + [486]
 
-    for i in range(10000):
-        errors_per_m = pd.DataFrame(columns=sample_sizes)
+    errors_per_m = {}
+    for i in tqdm(range(10000)):
+        # errors_per_m = pd.DataFrame(columns=sample_sizes)
         for m in sample_sizes:
-            current_sample = sample(FEATURES, m)
+            idx = np.random.randint(FEATURES.shape[-1], size=m)
+            current_sample = FEATURES[idx, :]
             labels = classify(current_sample, TRUE_FUNCTION).reshape((-1, 1))
             data = np.hstack((current_sample, labels))
             hypothesis = learning(data)
 
-            POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
             prediction = classify(POSITIVE_FEATURES, hypothesis)
-            import pdb; pdb.set_trace()
             correct = np.count_nonzero(prediction)
             error = 1 - (correct/ len(prediction))
-            
 
+            if m in errors_per_m:
+                errors_per_m[m].append(error)
+            else:
+                errors_per_m[m] = [error]
+    
+            
+    results = pd.DataFrame.from_dict(errors_per_m)
+    results.to_csv('errors_per_sample_size.csv')
     # Testing
     # fake_data = np.random.choice(2, (10, 10))
