@@ -35,7 +35,8 @@ if __name__ == "__main__":
     POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
     sample_sizes = list(range(50, 500, 50)) + [486]
 
-    errors_per_m = {}
+    true_loss = {}
+    real_hypothesis = {}
 
     for m in sample_sizes:
         i = 0
@@ -43,7 +44,6 @@ if __name__ == "__main__":
 
         while i < 10000:
             i_s.append(i)
-        # errors_per_m = pd.DataFrame(columns=sample_sizes)
             idx = np.random.randint(FEATURES.shape[0], size=m)
             current_sample = FEATURES[idx, :]
             labels = classify(current_sample, TRUE_FUNCTION).reshape((-1, 1))
@@ -52,18 +52,26 @@ if __name__ == "__main__":
                 continue
             data = np.hstack((current_sample, labels))
             hypothesis = learning(data)
-            prediction = classify(POSITIVE_FEATURES, hypothesis)
-            correct = np.count_nonzero(prediction)
-            error = 1 - (correct / len(prediction))
+            prediction_true_loss = classify(data, hypothesis)
+            prediction_hypothesis = classify(POSITIVE_FEATURES, hypothesis)
+            correct_true_loss = (np.count_nonzero(prediction_true_loss))/len(prediction_true_loss)
+            correct_hypothesis = (np.count_nonzero(prediction_hypothesis))/len(prediction_hypothesis)
 
-            if m in errors_per_m:
-                errors_per_m[m].append(error)
+
+            if m in true_loss:
+                true_loss[m].append(correct_true_loss)
             else:
-                errors_per_m[m] = [error]
+                true_loss[m] = [correct_true_loss]
+            if m in real_hypothesis:
+                real_hypothesis[m].append(correct_hypothesis)
+            else:
+                real_hypothesis[m] = [correct_hypothesis]
             i += 1
         print(f'Total iterations: {len(i_s)}')
 
-    results = pd.DataFrame.from_dict(errors_per_m)
-    results.to_csv('errors_per_sample_size.csv')
-    # Testing
-    # fake_data = np.random.choice(2, (10, 10))
+    results_tl = pd.DataFrame.from_dict(true_loss)
+    results_tl.to_csv('true_loss.csv')
+
+    results_rh = pd.DataFrame.from_dict(real_hypothesis)
+    results_rh.to_csv('real_hypothesis.csv')
+
