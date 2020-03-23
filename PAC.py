@@ -36,12 +36,20 @@ if __name__ == "__main__":
     sample_sizes = list(range(50, 500, 50)) + [486]
 
     errors_per_m = {}
-    for i in tqdm(range(10000)):
+
+    for m in sample_sizes:
+        i = 0
+        i_s = []
+
+        while i < 10000:
+            i_s.append(i)
         # errors_per_m = pd.DataFrame(columns=sample_sizes)
-        for m in sample_sizes:
             idx = np.random.randint(FEATURES.shape[0], size=m)
             current_sample = FEATURES[idx, :]
             labels = classify(current_sample, TRUE_FUNCTION).reshape((-1, 1))
+            previous_i = i
+            if not np.any(labels):
+                continue
             data = np.hstack((current_sample, labels))
             hypothesis = learning(data)
             prediction = classify(POSITIVE_FEATURES, hypothesis)
@@ -52,6 +60,8 @@ if __name__ == "__main__":
                 errors_per_m[m].append(error)
             else:
                 errors_per_m[m] = [error]
+            i += 1
+        print(f'Total iterations: {len(i_s)}')
 
     results = pd.DataFrame.from_dict(errors_per_m)
     results.to_csv('errors_per_sample_size.csv')
