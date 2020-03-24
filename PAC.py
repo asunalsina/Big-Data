@@ -26,7 +26,7 @@ def learning(data):
 
 
 if __name__ == "__main__":
-    np.random.seed(23)
+    np.random.seed(42)
     N = 20
 
     FEATURES = np.random.choice(2, (10000, 20))
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     true_loss = {}
     real_hypothesis = {}
 
-    for m in sample_sizes:
+    for m in tqdm(sample_sizes):
         i = 0
         i_s = []
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             hypothesis = learning(data)
             prediction_true_loss = classify(data, hypothesis)
             prediction_hypothesis = classify(POSITIVE_FEATURES, hypothesis)
-            correct_true_loss = (np.count_nonzero(prediction_true_loss))/len(prediction_true_loss)
+            correct_true_loss = (0.5 ** len(TRUE_FUNCTION)) - (0.5 ** len(hypothesis))
             correct_hypothesis = (np.count_nonzero(prediction_hypothesis))/len(prediction_hypothesis)
 
 
@@ -67,7 +67,6 @@ if __name__ == "__main__":
             else:
                 real_hypothesis[m] = [correct_hypothesis]
             i += 1
-        print(f'Total iterations: {len(i_s)}')
 
     results_tl = pd.DataFrame.from_dict(true_loss)
     results_tl.to_csv('true_loss.csv')
