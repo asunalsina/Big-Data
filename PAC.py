@@ -35,8 +35,7 @@ if __name__ == "__main__":
     POSITIVE_FEATURES = FEATURES[TRUE_DATA[:, -1] == 1]
     sample_sizes = list(range(50, 500, 50)) + [486]
 
-    true_loss = {}
-    real_hypothesis = {}
+    errors_dict = {}
 
     for m in tqdm(sample_sizes):
         i = 0
@@ -54,23 +53,16 @@ if __name__ == "__main__":
             hypothesis = learning(data)
             prediction_true_loss = classify(data, hypothesis)
             prediction_hypothesis = classify(POSITIVE_FEATURES, hypothesis)
-            correct_true_loss = (0.5 ** len(TRUE_FUNCTION)) - (0.5 ** len(hypothesis))
+            error = (0.5 ** len(TRUE_FUNCTION)) - (0.5 ** len(hypothesis))
             correct_hypothesis = (np.count_nonzero(prediction_hypothesis))/len(prediction_hypothesis)
 
+            if m in errors_dict:
+                errors_dict[m].append(error)
+            else:
+                errors_dict[m] = [error]
 
-            if m in true_loss:
-                true_loss[m].append(correct_true_loss)
-            else:
-                true_loss[m] = [correct_true_loss]
-            if m in real_hypothesis:
-                real_hypothesis[m].append(correct_hypothesis)
-            else:
-                real_hypothesis[m] = [correct_hypothesis]
             i += 1
 
-    results_tl = pd.DataFrame.from_dict(true_loss)
-    results_tl.to_csv('true_loss.csv')
-
-    results_rh = pd.DataFrame.from_dict(real_hypothesis)
-    results_rh.to_csv('real_hypothesis.csv')
+    results = pd.DataFrame.from_dict(errors_dict)
+    results.to_csv('errors.csv')
 
