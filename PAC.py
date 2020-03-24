@@ -51,7 +51,6 @@ if __name__ == "__main__":
                 continue
             data = np.hstack((current_sample, labels))
             hypothesis = learning(data)
-            prediction_true_loss = classify(data, hypothesis)
             prediction_hypothesis = classify(POSITIVE_FEATURES, hypothesis)
             error = (0.5 ** len(TRUE_FUNCTION)) - (0.5 ** len(hypothesis))
             correct_hypothesis = (np.count_nonzero(prediction_hypothesis))/len(prediction_hypothesis)
